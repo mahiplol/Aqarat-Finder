@@ -1,0 +1,24 @@
+[
+  {
+    "id": "listing_001",
+    "title": "1BHK Apartment in Lusail",
+    "description": "Modern apartment with parking and gym. Price: QAR 4800.",
+    "price": 4800,
+    "district": "Lusail",
+    "coordinates": { "lat": 25.416, "lng": 51.541 },
+    "type": "apartment",
+    "bedrooms": 1,
+    "bathrooms": 1
+  },
+  {
+    "id": "listing_002",
+    "title": "Studio in West Bay",
+    "description": "Affordable studio with sea view. QAR 4000.",
+    "price": 4000,
+    "district": "West Bay",
+    "coordinates": { "lat": 25.325, "lng": 51.531 },
+    "type": "studio",
+    "bedrooms": 0,
+    "bathrooms": 1
+  }
+]
