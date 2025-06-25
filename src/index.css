@@ -1,0 +1,25 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #f9f9f9;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+
+/* index.css */
+body {
+  margin: 0;
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: #f9f9f9;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
