@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { generateText, translateText } from './fanar.js';
+import { translateText, generateText } from './fanar.js';
 
 const LISTINGS_PATH = path.resolve('./listings.json');
 
@@ -15,9 +15,34 @@ function keywordMatchScore(query, text) {
 export async function getSemanticMatches(userQuery, topN = 5) {
   const listings = JSON.parse(fs.readFileSync(LISTINGS_PATH, 'utf-8'));
 
-  const scored = listings.map((listing) => {
+  // 👇 Translate Arabic queries
+  const queryInEnglish = /[\u0600-\u06FF]/.test(userQuery)
+    ? await translateText(userQuery, 'en')
+    : userQuery;
+
+  const queryLower = queryInEnglish.toLowerCase();
+
+  const inferredDistrict = ['lusail', 'west bay', 'the pearl', 'wakra'].find(d =>
+    queryLower.includes(d)
+  );
+
+  const inferredType = ['apartment', 'studio', 'villa', 'office'].find(t =>
+    queryLower.includes(t)
+  );
+
+  const priceMatch = queryLower.match(/([0-9]{3,6})\s*(qar|riyal|qatari riyal)?/i);
+  const inferredMaxPrice = priceMatch ? parseInt(priceMatch[1]) : null;
+
+  const filtered = listings.filter(listing => {
+    const districtOk = inferredDistrict ? listing.district.toLowerCase().includes(inferredDistrict) : false; // strict
+    const typeOk = inferredType ? listing.type.toLowerCase().includes(inferredType) : true;
+    const priceOk = inferredMaxPrice ? listing.price <= inferredMaxPrice : true;
+    return districtOk && typeOk && priceOk;
+  });
+
+  const scored = filtered.map((listing) => {
     const fullText = `${listing.title}. ${listing.description}`;
-    const score = keywordMatchScore(userQuery, fullText);
+    const score = keywordMatchScore(queryLower, fullText);
     return { listing, score };
   });
 
@@ -26,6 +51,8 @@ export async function getSemanticMatches(userQuery, topN = 5) {
     .slice(0, topN)
     .map(entry => entry.listing);
 }
+
+
 
 export async function generateAnswer(userQuery, listings, lang) {
   const summary = listings.map((l, i) => (
