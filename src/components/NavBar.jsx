@@ -8,7 +8,7 @@ export default function NavBar() {
         <img src="/aq-logo.png" alt="Logo" className="nav-logo" />
       </div>
 
-      <div className="nav-title">Aqarat Finder</div>
+      <div className="nav-title">AQARAT FINDER</div>
 
       <div className="nav-right">
         <button>Tutorial</button>
