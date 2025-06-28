@@ -1,6 +1,7 @@
 // backend/fanar.js
 import axios from 'axios';
 import dotenv from 'dotenv';
+import fs from 'fs';
 dotenv.config();
 
 const FANAR_API_KEY = process.env.FANAR_API_KEY;
@@ -9,14 +10,17 @@ const FANAR_HEADERS = {
   'Content-Type': 'application/json',
 };
 
-export async function generateText(prompt) {
+// 🧠 Load the strict system prompt from external file
+const SYSTEM_PROMPT = fs.readFileSync('./fanar_prompt.txt', 'utf-8');
+
+export async function generateTextWithSystem(systemPrompt, userPrompt) {
   const response = await axios.post(
     'https://api.fanar.qa/v1/chat/completions',
     {
       model: 'Fanar-S-1-7B',
       messages: [
-        { role: 'system', content: 'You are a helpful assistant.' },
-        { role: 'user', content: prompt },
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
       ]
     },
     { headers: FANAR_HEADERS }
@@ -39,3 +43,5 @@ export async function translateText(text, targetLang) {
   );
   return response.data.choices[0].message.content;
 }
+
+export { SYSTEM_PROMPT };

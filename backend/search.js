@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { translateText, generateText } from './fanar.js';
+import { SYSTEM_PROMPT, translateText, generateTextWithSystem } from './fanar.js';
 
 const LISTINGS_PATH = path.resolve('./listings.json');
 
@@ -12,10 +12,12 @@ function keywordMatchScore(query, text) {
   ), 0);
 }
 
+// 🔧 Helper to normalize strings like "Al Khor" vs "alkhor"
+const normalize = str => str.toLowerCase().replace(/\s+/g, '');
+
 export async function getSemanticMatches(userQuery, topN = 10) {
   const listings = JSON.parse(fs.readFileSync(LISTINGS_PATH, 'utf-8'));
 
-  // 👇 Translate Arabic queries
   const queryInEnglish = /[\u0600-\u06FF]/.test(userQuery)
     ? await translateText(userQuery, 'en')
     : userQuery;
@@ -23,7 +25,7 @@ export async function getSemanticMatches(userQuery, topN = 10) {
   const queryLower = queryInEnglish.toLowerCase();
 
   const inferredDistrict = ['lusail', 'west bay', 'the pearl', 'wakra', 'al khor'].find(d =>
-    queryLower.includes(d)
+    normalize(queryLower).includes(normalize(d))
   );
 
   const inferredType = ['apartment', 'studio', 'villa', 'office'].find(t =>
@@ -38,23 +40,33 @@ export async function getSemanticMatches(userQuery, topN = 10) {
   if (queryLower.includes('under') || queryLower.includes('less than')) priceOp = 'max';
 
   const filtered = listings.filter(listing => {
-    const districtOk = inferredDistrict ? listing.district.toLowerCase().includes(inferredDistrict) : false;
-    const typeOk = inferredType ? listing.type.toLowerCase().includes(inferredType) : true;
+    const districtOk = inferredDistrict
+      ? normalize(listing.district).includes(normalize(inferredDistrict))
+      : true;
 
-    const priceOk =
-      !inferredMaxPrice ? true :
-      priceOp === 'min' ? listing.price >= inferredMaxPrice :
-      priceOp === 'max' ? listing.price <= inferredMaxPrice : true;
+    const typeOk = inferredType
+      ? listing.type.toLowerCase().includes(inferredType)
+      : true;
+
+    const priceOk = !inferredMaxPrice
+      ? true
+      : priceOp === 'min'
+        ? listing.price >= inferredMaxPrice
+        : priceOp === 'max'
+          ? listing.price <= inferredMaxPrice
+          : true;
 
     return districtOk && typeOk && priceOk;
   });
 
+  // Score only truly filtered listings
   const scored = filtered.map((listing) => {
     const fullText = `${listing.title}. ${listing.description}`;
     const score = keywordMatchScore(queryLower, fullText);
     return { listing, score };
   });
 
+  // Sort and return top N matches (if more than N)
   return scored
     .sort((a, b) => b.score - a.score)
     .slice(0, topN)
@@ -66,22 +78,9 @@ export async function generateAnswer(userQuery, listings, lang) {
     `${i + 1}. ${l.title} — ${l.description} (QAR ${l.price}, ${l.bedrooms} bed, ${l.district})`
   )).join('\n');
 
-  const prompt = `
-User asked: ${userQuery}
-Here are ${listings.length} listings that match the request:
+  const fullPrompt = `User asked: ${userQuery}\nListings:\n${summary}`;
 
-${summary}
-
-Please respond ONLY based on the listings provided above.
-- Do NOT add any extra or fake listings.
-- Summarize only the actual listings.
-- Be friendly and concise.
-- If no listings are shown, say: "No matching properties found."
-
-Respond in a clear paragraph format.
-`;
-
-  let output = await generateText(prompt);
+  let output = await generateTextWithSystem(SYSTEM_PROMPT, fullPrompt);
 
   if (lang === 'ar') {
     output = await translateText(output, 'ar');

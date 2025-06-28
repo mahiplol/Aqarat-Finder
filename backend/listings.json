@@ -7177,15 +7177,15 @@
   },
   {
     "id": "listing_300",
-    "title": "Apartment in Wakra #60",
-    "description": "A modern apartment located in Wakra. It also has a sea view. Price: QAR 12958/month.",
+    "title": "Penthouse in Wakra #60",
+    "description": "A modern penthouse located in Wakra. It also has a sea view. Price: QAR 12958/month.",
     "price": 12958,
     "district": "Wakra",
     "coordinates": {
       "lat": 25.164508117038054,
       "lng": 51.60664648554205
     },
-    "type": "Apartment",
+    "type": "Penthouse",
     "bedrooms": 5,
     "bathrooms": 2,
     "size": 342,
