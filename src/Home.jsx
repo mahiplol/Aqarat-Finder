@@ -33,7 +33,6 @@ export default function Home() {
 
   return (
     <div>
-      <NavBar />
       <SearchBox onSearch={handleSearch} />
 
       {/* 🧠 Fanar summary output */}

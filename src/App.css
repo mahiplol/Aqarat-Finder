@@ -1,52 +1,142 @@
-#root {
+ld:root {
+  --primary: #2563eb;
+  --secondary: #f1f5f9;
+  --accent: #f59e42;
+  --text: #1e293b;
+  --background: #f8fafc;
+  --border-radius: 16px;
+  --shadow: 0 8px 32px rgba(37,99,235,0.08);
+  --Navbar-height: 64px;
+  --footer-bg: #e5e7eb;
+  --footer-text: #6b7280;
+}
+
+/* Animated gradient background for a live, moving effect */
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(-45deg, var(--primary), var(--accent), #38bdf8, var(--secondary));
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite, fadeInApp 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+  color: var(--text);
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+}
+
+@keyframes gradientBG {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+@keyframes fadeInApp {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.app-header {
+  background: rgba(37, 99, 235, 0.92);
+  color: #fff;
+  height: var(--Navbar-height);
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-img {
+  height: 44px;
+  width: 44px;
+  object-fit: contain;
+  /* Logo is loaded from /public/logo.png, so just use <img src="/logo.png" ... /> in your JSX */
+}
+
+.project-name {
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 2.5px;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
   margin: 0;
   padding: 0;
 }
 
-
-/* ── Home Section Styles ── */
-.section {
-  margin-top: 4rem;
-  max-width: 1280px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 1rem;
-}
-.filter-chips button {
-  background: #ebf8ff;
-  color: #2b6cb0;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  margin: 0.25rem;
-  cursor: pointer;
-}
-.featured-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
-}
-.featured-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  background: #fff;
-}
-.featured-card .image-placeholder {
-  background: #edf2f7;
-  height: 100px;
-  border-radius: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-.map-preview {
-  height: 12rem;
-  background: #edf2f7;
-  border-radius: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 2rem;
-  color: #718096;
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+  font-size: 1.1rem;
 }
 
+.nav-links a:hover {
+  color: var(--accent);
+}
 
+.app-main {
+  flex: 1;
+  max-width: 1200px;
+  margin: 2rem auto;
+  width: 100%;
+  padding: 0 2rem;
+  background: rgba(255,255,255,0.85);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.3s;
+}
+
+.app-footer {
+  background: var(--footer-bg);
+  color: var(--footer-text);
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 1rem;
+  border-top: 1px solid #e5e7eb;
+  letter-spacing: 1px;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
+}
+
+/* Responsive adjustments */
+@media (max-width: 700px) {
+  .navbar {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0 1rem;
+  }
+  .app-main {
+    padding: 0 0.5rem;
+    margin: 1rem 0;
+  }
+  .project-name {
+    font-size: 1.3rem;
+  }
+  .logo-img {
+    height: 36px;
+    width: 36px;
+  }
+}
