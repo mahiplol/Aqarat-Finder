@@ -218,3 +218,11 @@
   background: #8D1B3D;
   color: white;
 }
+
+
+.map-container {
+  margin-top: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  overflow: hidden;
+}

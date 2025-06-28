@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import SearchBox from './components/SearchBox';
 import './Home.css';
 
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+console.log('MAP KEY:', GOOGLE_MAPS_API_KEY);
+
 export default function Home() {
   const [answer, setAnswer] = useState('');
   const [listings, setListings] = useState([]);
@@ -94,7 +97,7 @@ export default function Home() {
                   <span className="aq-detail-value">{modalListing.Contact}</span>
                 </div>
               </div>
-              
+
               <div className="aq-amenities">
                 <span className="aq-amenities-label">Amenities:</span>
                 <div className="aq-tags">
@@ -103,6 +106,22 @@ export default function Home() {
                   ))}
                 </div>
               </div>
+
+              {/* 🗺️ Embedded Google Map */}
+              {modalListing.coordinates && (
+                <div className="map-container">
+                  <h5>Location Map</h5>
+                  <iframe
+                    title="Google Map"
+                    width="100%"
+                    height="350"
+                    frameBorder="0"
+                    style={{ border: 0, borderRadius: '12px' }}
+                    src={`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${modalListing.coordinates.lat},${modalListing.coordinates.lng}&zoom=15`}
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -110,7 +129,7 @@ export default function Home() {
 
       {/* Quick Filters */}
       <div className="aq-filters">
-        {['West Bay', 'The Pearl', 'Lusail', 'Al Sadd', 'Al Khor', 'Al Waab'].map(area => (
+        {['West Bay', 'The Pearl', 'Lusail', 'Al Khor', 'Al Waab'].map(area => (
           <button 
             key={area} 
             className="aq-filter-btn"
