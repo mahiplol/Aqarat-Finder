@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
-import NavBar from './components/NavBar';
 import SearchBox from './components/SearchBox';
 import './Home.css';
 
 export default function Home() {
-  // 🔄 Connection-related state
   const [answer, setAnswer] = useState('');
   const [listings, setListings] = useState([]);
   const [modalListing, setModalListing] = useState(null);
 
-  // 🔄 Send query to backend
   const handleSearch = async (query) => {
     if (!query.trim()) return;
     try {
@@ -20,7 +17,6 @@ export default function Home() {
       });
 
       if (!res.ok) throw new Error('Request failed');
-
       const data = await res.json();
       setAnswer(data.answer);
       setListings(data.matches);
@@ -32,53 +28,98 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div className="aq-container">
       <SearchBox onSearch={handleSearch} />
 
-      {/* 🧠 Fanar summary output */}
-      {answer && <div className="fanar-response">{answer}</div>}
+      {/* AI Response */}
+      {answer && (
+        <div className="aq-response">
+          <div className="aq-ai-icon">AQ</div>
+          <div className="aq-message">{answer}</div>
+        </div>
+      )}
 
-      {/* 📦 Listing cards */}
+      {/* Property Listings */}
       {listings.length > 0 && (
-        <div className="listing-grid">
+        <div className="aq-grid">
           {listings.map(l => (
-            <div key={l.id} className="listing-card" onClick={() => setModalListing(l)}>
-              <img src={l.image || 'https://via.placeholder.com/250'} className="card-img" />
-              <h3>{l.title}</h3>
-              <p>QAR {l.price.toLocaleString()} · {l.bedrooms} bed · {l.size || 100} {l.size_unit || 'sqm'}</p>
+            <div key={l.id} className="aq-card" onClick={() => setModalListing(l)}>
+              <div className="aq-card-media">
+                <img src={l.image || 'https://via.placeholder.com/300'} alt={l.title} />
+              </div>
+              <div className="aq-card-content">
+                <h3 className="aq-card-title">{l.title}</h3>
+                <p className="aq-card-details">
+                  QAR {l.price.toLocaleString()} · {l.bedrooms} bed · {l.size || 100} {l.size_unit || 'sqm'}
+                </p>
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* 🔍 Modal view for selected listing */}
+      {/* Property Modal */}
       {modalListing && (
-        <div className="modal" onClick={() => setModalListing(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setModalListing(null)}>×</button>
-            <img src={modalListing.image || 'https://via.placeholder.com/400'} className="modal-img" />
-            <h2>{modalListing.title}</h2>
-            <p>{modalListing.description}</p>
-            <p><strong>QAR:</strong> {modalListing.price.toLocaleString()}</p>
-            <p><strong>Type:</strong> {modalListing.type}</p>
-            <p><strong>Bedrooms:</strong> {modalListing.bedrooms}, <strong>Bathrooms:</strong> {modalListing.bathrooms}</p>
-            <p><strong>Agency:</strong> {modalListing.Agency}</p>
-            <p><strong>Contact:</strong> {modalListing.Contact}</p>
-            <p><strong>Amenities:</strong> {(modalListing.amenities || []).join(', ')}</p>
+        <div className="aq-modal" onClick={() => setModalListing(null)}>
+          <div className="aq-modal-content" onClick={e => e.stopPropagation()}>
+            <button className="aq-close-btn" onClick={() => setModalListing(null)}>×</button>
+            
+            <div className="aq-modal-media">
+              <img src={modalListing.image || 'https://via.placeholder.com/500'} alt={modalListing.title} />
+            </div>
+            
+            <div className="aq-modal-body">
+              <h2>{modalListing.title}</h2>
+              <p className="aq-modal-description">{modalListing.description}</p>
+              
+              <div className="aq-detail-grid">
+                <div className="aq-detail">
+                  <span className="aq-detail-label">Price</span>
+                  <span className="aq-detail-value">QAR {modalListing.price.toLocaleString()}</span>
+                </div>
+                <div className="aq-detail">
+                  <span className="aq-detail-label">Type</span>
+                  <span className="aq-detail-value">{modalListing.type}</span>
+                </div>
+                <div className="aq-detail">
+                  <span className="aq-detail-label">Bed/Bath</span>
+                  <span className="aq-detail-value">{modalListing.bedrooms} / {modalListing.bathrooms}</span>
+                </div>
+                <div className="aq-detail">
+                  <span className="aq-detail-label">Agency</span>
+                  <span className="aq-detail-value">{modalListing.Agency}</span>
+                </div>
+                <div className="aq-detail">
+                  <span className="aq-detail-label">Contact</span>
+                  <span className="aq-detail-value">{modalListing.Contact}</span>
+                </div>
+              </div>
+              
+              <div className="aq-amenities">
+                <span className="aq-amenities-label">Amenities:</span>
+                <div className="aq-tags">
+                  {(modalListing.amenities || []).map((amenity, i) => (
+                    <span key={i} className="aq-tag">{amenity}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* 🎯 Optional: Quick chips */}
-      <section className="section">
-        <div className="filter-chips">
-          {['West Bay', 'The Pearl', 'Lusail', 'Al Sadd', 'Al Khor', 'Al Waab'].map(area => (
-            <button key={area} onClick={() => handleSearch(area)}>
-              {area}
-            </button>
-          ))}
-        </div>
-      </section>
+      {/* Quick Filters */}
+      <div className="aq-filters">
+        {['West Bay', 'The Pearl', 'Lusail', 'Al Sadd', 'Al Khor', 'Al Waab'].map(area => (
+          <button 
+            key={area} 
+            className="aq-filter-btn"
+            onClick={() => handleSearch(area)}
+          >
+            {area}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
