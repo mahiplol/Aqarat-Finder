@@ -1,12 +1,92 @@
-# React + Vite
+# 🏠 Aqarat-Finder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Real-estate search WebApp powered by **Fanar LLM** (multilingual Q&A & translation) with a **React + Vite** frontend and a **Node/Express** backend.  
+Type (or speak!) a prompt in **English or Arabic** and get filtered listings, instant summaries, maps, and images.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Key Features
+- **Semantic Search** – fuzzy keyword + rule-based filters (district, type, price).
+- **Bilingual** – automatic Arabic ↔ English detection and translation through Fanar.
+- **Google Maps Embed** for every listing.
+- **Modern UI** – glassmorphic navbar, chat-style search bar, responsive cards & modals.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📁 Project Structure
+
+```
+# Project tree
+
+.
+ * [backend](./backend)                — Express API & Fanar integration
+ * [public](./public)                  — Static assets served by Vite
+ * [src](./src)                        — React frontend (components, styles)
+ * [.gitignore](./.gitignore)
+ * [README.md](./README.md)
+ * [eslint.config.js](./eslint.config.js)
+ * [index.html](./index.html)          — Vite entry
+ * [package.json](./package.json)      — root dev scripts
+ * [package-lock.json](./package-lock.json)
+ * [vite.config.js](./vite.config.js)  — proxy `/search` → backend
+```
+
+<details>
+<summary>backend sub-tree</summary>
+
+```
+backend
+ ├─ images/                — placeholder & fallback photos
+ ├─ buy.json               — raw listings for “buy”
+ ├─ rent.json              — raw listings for “rent”
+ ├─ listings.json          — merged dataset used in demo
+ ├─ fanar.js               — helper to call Fanar chat API
+ ├─ fanar_prompt.txt       — system prompt
+ ├─ search.js              — semantic match + summary generation
+ ├─ server.js              — Express server (PORT 5000)
+ ├─ package.json / lock    — backend deps & scripts
+ └─ .env                   — **add your FANAR_API_KEY here**
+```
+</details>
+
+---
+
+## 🚀 Quick Start
+
+### 1. Clone and install
+```bash
+git clone https://github.com/mahiplol/Aqarat-Finder.git
+cd Aqarat-Finder
+```
+
+### 2. Backend (port **5000**)
+```bash
+cd backend
+cp .env.example .env          # create and add FANAR_API_KEY, optional MAP key
+npm install
+npm run dev                   # nodemon server.js
+# → “Server running on http://localhost:5000”
+```
+
+### 3. Frontend (port **5173**)
+```bash
+cd ../src
+npm install
+npm run dev                   # Vite dev server
+# React app opens at http://localhost:5173
+```
+
+> **Vite proxy** in `vite.config.js` automatically forwards  
+> `POST /search` → `http://localhost:5000/search`.
+
+---
+
+## 🔧 Environment Variables
+
+| File / var           | Purpose                           |
+|----------------------|-----------------------------------|
+| `backend/.env`       | `FANAR_API_KEY=xxxx` (required)   |
+|                      | `VITE_GOOGLE_MAPS_API_KEY=xxxx` (optional, if embedding maps) |
+
+---
+
